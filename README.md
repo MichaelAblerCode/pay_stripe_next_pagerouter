@@ -32,7 +32,7 @@ STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxx
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/stripe-checkout-example.git
+git clone https://github.com/MichaelAblerCode/pay_stripe_next_pagerouter.git
 cd stripe-checkout-example
 npm install
 ```
