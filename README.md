@@ -1,6 +1,6 @@
-# Stripe Checkout Example with Next.js
+# Stripe Checkout Example with Next.js using page router
 
-This project demonstrates a simple e-commerce checkout flow using Stripe for payment processing, integrated with Next.js. It allows users to select from multiple payment methods (Credit/Debit Card, PayPal, Klarna) and complete a purchase via Stripe's Checkout.
+This project demonstrates a simple e-commerce checkout flow using Stripe for payment processing, integrated with Next.js using the page router. It allows users to select from multiple payment methods (Credit/Debit Card, PayPal, Klarna) and complete a purchase via Stripe's Checkout.
 
 ## Features
 
@@ -8,7 +8,7 @@ This project demonstrates a simple e-commerce checkout flow using Stripe for pay
 - Dynamic Payment Selection: Choose specific payment method or allow all available methods
 - Success and Cancel Handling: Proper redirect handling for payment completion or cancellation
 - Error Handling: Graceful handling of Stripe API errors and invalid session IDs
-- Responsive UI: Simple, user-friendly interface for selecting payment methods
+- Responsive UI: Simple, user-friendly interface for selecting payment methods.
 
 ## Prerequisites
 
