@@ -1,40 +1,167 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Stripe Checkout Example with Next.js
 
-## Getting Started
+This project demonstrates a simple e-commerce checkout flow using Stripe for payment processing, integrated with Next.js. It allows users to select from multiple payment methods (Credit/Debit Card, PayPal, Klarna) and complete a purchase via Stripe's Checkout.
 
-First, run the development server:
+## Features
+
+- Multiple Payment Methods: Credit/Debit Card, PayPal, and Klarna via Stripe Checkout
+- Dynamic Payment Selection: Choose specific payment method or allow all available methods
+- Success and Cancel Handling: Proper redirect handling for payment completion or cancellation
+- Error Handling: Graceful handling of Stripe API errors and invalid session IDs
+- Responsive UI: Simple, user-friendly interface for selecting payment methods
+
+## Prerequisites
+
+- Node.js (v14.x or higher)
+- Stripe Account (for API keys)
+- Stripe CLI (optional, for webhook testing)
+- Git
+
+## Setup
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxx
+STRIPE_PRICE_ID=price_xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Installation
+
+```bash
+git clone https://github.com/your-username/stripe-checkout-example.git
+cd stripe-checkout-example
+npm install
+```
+
+### Running the Application
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000` in your browser.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Project Structure
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+```
+stripe-checkout-example/
+├── lib/
+│   └── stripe.js           # Stripe initialization
+├── pages/
+│   ├── api/
+│   │   └── checkout_sessions.js  # Checkout API route
+│   ├── success.js          # Success page
+│   └── index.js            # Homepage with form
+├── .env.local             # Environment variables
+└── package.json
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## How It Works
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Homepage (/)
 
-## Learn More
+- Displays payment method selection
+- Form submits to `/api/checkout_sessions`
 
-To learn more about Next.js, take a look at the following resources:
+### Checkout Session Creation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+- Validates POST request
+- Creates Stripe Checkout session
+- Redirects to Stripe Checkout page
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Success Page (/success)
 
-## Deploy on Vercel
+- Verifies session completion
+- Shows confirmation message
+- Handles error states
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Important: Payment Reliability
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+### Why Implement Webhooks
+
+The current redirect-based success confirmation isn't fully reliable because:
+
+- Users might close browser before redirect
+- Network issues could prevent redirect
+- Success page could be bypassed
+
+### Webhook Implementation
+
+1. **Register Webhook in Stripe Dashboard**
+
+   - Add endpoint URL
+   - Select `checkout.session.completed` event
+
+2. **Local Testing with Stripe CLI**
+
+```bash
+stripe listen --forward-to http://localhost:3000/api/webhooks/stripe
+```
+
+3. **Create Webhook Endpoint**
+
+```javascript
+// filepath: pages/api/webhooks/stripe.js
+import { buffer } from 'micro';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const buf = await buffer(req);
+  const sig = req.headers['stripe-signature'];
+
+  try {
+    const event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      // Process the successful payment
+      console.log(`Payment completed for session ${session.id}`);
+    }
+
+    res.status(200).json({ received: true });
+  } catch (err) {
+    console.error('Webhook error:', err.message);
+    res.status(400).json({ error: 'Webhook Error' });
+  }
+}
+```
+
+4. **Add Webhook Secret**
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+5. **Test Webhook**
+
+```bash
+stripe trigger checkout.session.completed
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature-name`)
+3. Commit changes (`git commit -m "Add feature"`)
+4. Push to branch (`git push origin feature-name`)
+5. Open a Pull Request
+
+## License
+
+MIT License - feel free to use and modify for your projects.
