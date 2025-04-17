@@ -1,30 +1,17 @@
+import { paymentMethods } from '@/lib/stripe';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-const paymentMethods = [
-  {
-    id: 'card',
-    label: 'Card Payment',
-    description: 'Pay with Credit or Debit Card',
-  },
-  {
-    id: 'paypal',
-    label: 'PayPal',
-    description: 'Pay with your PayPal account',
-  },
-  {
-    id: 'klarna',
-    label: 'Klarna',
-    description: 'Pay later with Klarna',
-  },
-  {
-    id: 'all',
-    label: 'All',
-    description: 'All payment stripe can offer to you',
-  },
-];
+/** Triggers SSR and paymentMethods import remains secure on server including the stripe secret key */
+export async function getStaticProps() {
+  return {
+    props: {
+      paymentMethods,
+    },
+  };
+}
 
-export default function IndexPage() {
+export default function IndexPage({ paymentMethods }) {
   const router = useRouter();
   const { canceled } = router.query;
 
