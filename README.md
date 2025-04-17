@@ -21,7 +21,7 @@ This project demonstrates a simple e-commerce checkout flow using Stripe for pay
 
 ### Environment Variables
 
-Create a `.env.local` file in the root directory:
+Create a `.env.local` file in the root directory and add API keys of your Stripe Account :
 
 ```bash
 STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxx
