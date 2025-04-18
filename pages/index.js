@@ -2,7 +2,8 @@ import { paymentMethods } from '@/lib/stripe';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-/** Triggers SSR and paymentMethods import remains secure on server including the stripe secret key */
+/** Avoid default CSR and enforces SSG to make paymentMethods import remain secure on server including the stripe secret key
+ */
 export async function getStaticProps() {
   return {
     props: {
