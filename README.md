@@ -1,6 +1,6 @@
-# Stripe Checkout Example with Next.js (Page Router)
+# Stripe Checkout Example with Next.js (Pages Router)
 
-This project demonstrates a simple e-commerce checkout flow using Stripe for payment processing, integrated with Next.js using the Page Router. It allows users to select from multiple payment methods (Credit/Debit Card, PayPal, Klarna) and complete a purchase via Stripe's Checkout.
+This project demonstrates a simple e-commerce checkout flow using Stripe for payment processing, integrated with Next.js using the Pages Router. It allows users to select from multiple payment methods (Credit/Debit Card, PayPal, Klarna) and complete a purchase via Stripe's Checkout.
 
 ## Features
 
@@ -32,8 +32,8 @@ STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxx
 ### Installation
 
 ```bash
-git clone https://github.com/MichaelAblerCode/pay_stripe_next_pagerouter.git
-cd pay_stripe_next_pagerouter
+git clone https://github.com/MichaelAblerCode/pay_stripe_next_pagesrouter.git
+cd pay_stripe_next_pagesrouter
 npm install
 ```
 
